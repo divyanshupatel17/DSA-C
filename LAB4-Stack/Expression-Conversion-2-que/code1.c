@@ -1,4 +1,4 @@
-/*
+
 Problem Statement
 
 Jake is working on a program that converts infix expressions to prefix expressions. Help Jake by writing a function that reads an infix expression from the input and outputs its corresponding prefix expression.
@@ -24,9 +24,9 @@ Output 1 :
 Input 2 :
 (5/1)*4+2
 Output 2 :
-+* /5142
++*/5142
 
-*/
+
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
