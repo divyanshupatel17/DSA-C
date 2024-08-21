@@ -1,4 +1,3 @@
-/*
 Problem Statement
 
 You are delving into the classical Towers of Hanoi problem, a puzzle that involves transferring a set of numbered disks from one peg to another while adhering to specific rules. To simplify the problem, each disk is represented by integers from 1 to n, where n is the total number of disks. The pegs are labeled A, B, and C.
@@ -47,7 +46,7 @@ Move disk 1 from A to B
 Move disk 2 from A to C
 Move disk 1 from B to C
 Total number of moves: 3
-*/
+
 #include <stdio.h>
 #include <stdlib.h>
 
