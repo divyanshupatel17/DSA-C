@@ -1,4 +1,3 @@
-/*
 Problem Statement
 
 Tisha wants to learn mathematical expressions and she wants to create a program to accept multiple infix expressions from the user and convert them into postfix expressions using a Stack-based algorithm. 
@@ -40,7 +39,8 @@ Input 3 :
 a*(b+c)/d-e
 Output 3 :
 Postfix expression 1: abc+*d/e-
-*/
+
+    
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
