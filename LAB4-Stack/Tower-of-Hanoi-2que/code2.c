@@ -47,111 +47,31 @@ Move disk 2 from A to C
 Move disk 1 from B to C
 Total number of moves: 3
 
+    
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
-// Stack structure
-typedef struct Stack {
-    int data;
-    struct Stack* next;
-} Stack;
-
-// Function to initialize the stack
-Stack* initStack() {
-    return NULL;
-}
-
-// Function to push an element onto the stack
-void push(Stack** top, int data) {
-    Stack* newNode = (Stack*)malloc(sizeof(Stack));
-    newNode->data = data;
-    newNode->next = *top;
-    *top = newNode;
-}
-
-// Function to pop an element from the stack
-int pop(Stack** top) {
-    if (*top == NULL) return -1;
-    int data = (*top)->data;
-    Stack* temp = *top;
-    *top = (*top)->next;
-    free(temp);
-    return data;
-}
-
-// Function to check if the stack is empty
-int isEmpty(Stack* top) {
-    return top == NULL;
-}
-
-// Function to print the moves
-void printMove(int disk, char from, char to) {
-    printf("Move disk %d from %c to %c\n", disk, from, to);
-}
-
-// Iterative function to solve the Tower of Hanoi problem
-void towerOfHanoiMovesWithStack(int n) {
-    Stack* source = initStack();
-    Stack* auxiliary = initStack();
-    Stack* destination = initStack();
-
-    // Initialize the source stack with disks
-    for (int i = n; i >= 1; i--) {
-        push(&source, i);
+void TOH(int n,char src,char aux,char dest,int *move_cnt){
+    if(n==1){
+        (*move_cnt)++;
+        printf("Move disk 1 from %c to %c\n",src,dest);
+        return ;
     }
-
-    int totalMoves = 0;
-    while (!isEmpty(source) || !isEmpty(auxiliary)) {
-        // Move disk from source to destination
-        if (!isEmpty(source) && (isEmpty(destination) || pop(&source) < pop(&destination))) {
-            int disk = pop(&source);
-            push(&destination, disk);
-            printMove(disk, 'A', 'C');
-            totalMoves++;
-        }
-        // Move disk from source to auxiliary
-        else if (!isEmpty(source) && (isEmpty(auxiliary) || pop(&source) < pop(&auxiliary))) {
-            int disk = pop(&source);
-            push(&auxiliary, disk);
-            printMove(disk, 'A', 'B');
-            totalMoves++;
-        }
-        // Move disk from auxiliary to destination
-        else if (!isEmpty(auxiliary) && (isEmpty(destination) || pop(&auxiliary) < pop(&destination))) {
-            int disk = pop(&auxiliary);
-            push(&destination, disk);
-            printMove(disk, 'B', 'C');
-            totalMoves++;
-        }
-        // Move disk from auxiliary to source
-        else if (!isEmpty(auxiliary) && (isEmpty(source) || pop(&auxiliary) < pop(&source))) {
-            int disk = pop(&auxiliary);
-            push(&source, disk);
-            printMove(disk, 'B', 'A');
-            totalMoves++;
-        }
-        // Move disk from destination to auxiliary
-        else if (!isEmpty(destination) && (isEmpty(auxiliary) || pop(&destination) < pop(&auxiliary))) {
-            int disk = pop(&destination);
-            push(&auxiliary, disk);
-            printMove(disk, 'C', 'B');
-            totalMoves++;
-        }
-        // Move disk from destination to source
-        else if (!isEmpty(destination) && (isEmpty(source) || pop(&destination) < pop(&source))) {
-            int disk = pop(&destination);
-            push(&source, disk);
-            printMove(disk, 'C', 'A');
-            totalMoves++;
-        }
-    }
-
-    printf("Total number of moves: %d\n", totalMoves);
+    TOH(n-1,src,dest,aux,move_cnt);
+    (*move_cnt)++;
+    printf("Move disk %d from %c to %c\n",n , src , dest);
+    TOH(n-1,aux,src,dest,move_cnt);
+    
 }
 
 int main() {
     int n;
     scanf("%d", &n);
-    towerOfHanoiMovesWithStack(n);
+    
+    int move_cnt = 0;
+    
+    TOH(n,'A','B','C',&move_cnt);
+    printf("Total number of moves: %d\n",move_cnt);
     return 0;
 }
