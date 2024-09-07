@@ -53,6 +53,15 @@ int dequeue(Queue *q) {
     return dequeuedItem;
 }
 
+// peek first element 
+int peek(Queue *q){
+    if(isEmpty(q)){
+        printf("Queue is empty.\n");
+        exit(1);
+    }
+    return q->arr[q->front];
+}
+
 int main() {
     Queue q;
     initialize(&q);
@@ -63,6 +72,7 @@ int main() {
 
     printf("Dequeued element: %d\n", dequeue(&q)); // Should print 10
     printf("Dequeued element: %d\n", dequeue(&q)); // Should print 20
+    printf("Peeked(front) element: %d\n", peek(&q)); // Should print 20
 
     return 0;
 }
