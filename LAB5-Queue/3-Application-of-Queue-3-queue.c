@@ -483,6 +483,7 @@ int compare(const void *a, const void *b) {
     return (*(int*)a - *(int*)b);
 }
 
+
 int main() {
     QueueLinkedList q;
     initializeQueueLinkedList(&q);
