@@ -181,7 +181,16 @@ int main() {
 
 
 // STRING
+/*
+Key Differences Between strncpy and strcpy:
 
+strncpy -> limits the number of characters copied and does not necessarily null-terminate the string if the source string is longer than the specified limit. You need to handle null-termination manually, if needed.
+char *strncpy(char *destination, const char *source, size_t num);
+
+strcpy -> copies the entire string, including the null-terminator, but it doesn't perform bounds checking, which can lead to buffer overflows if the
+char *strcpy(char *destination, const char *source);
+
+*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
