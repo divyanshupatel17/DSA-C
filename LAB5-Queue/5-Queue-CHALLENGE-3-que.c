@@ -481,3 +481,125 @@ Dequeued Order: M
 Queue is empty. No orders available.
 No orders in the queue.
 Exiting program
+
+#include <stdio.h>
+#include <stdlib.h>
+#define MAX 5
+typedef struct {
+    char arr[MAX];
+    int front;
+    int rear;
+} Queue;
+
+void initialize(Queue *q){
+    q->front = -1;
+    q->rear = -1;
+}
+
+int isFull(Queue *q){
+    return q->rear == MAX-1;
+}
+
+int isEmpty(Queue *q){
+    return q->front == -1;
+}
+
+void enqueue(Queue *q,char item){
+    if(isFull(q)){
+        printf("Queue is full. Cannot enqueue more orders.\n");
+        return ;
+    }
+    if(isEmpty(q)){
+        q->front = 0;
+        q->rear = 0;
+    } else {
+        q->rear++;
+    }
+    q->arr[q->rear] = item;
+    printf("Order for %c is enqueued.\n",item);
+}
+
+void dequeue(Queue *q){
+    if(isEmpty(q)){
+        printf("No orders in the queue.\n");
+        return;
+    } 
+    char item = q->arr[q->front];
+    if(q->front == q->rear){
+        q->front = -1;
+        q->rear = -1;
+    } else {
+        q->front++;
+    }
+    printf("Dequeued Order: %c\n",item);
+    // return item;
+}
+
+void display(Queue *q){
+    if(isEmpty(q)){
+        printf("Queue is empty. No orders available.\n");
+        return;
+    } 
+    printf("Orders in the queue are:");
+    for(int i=q->front ; i<=q->rear ; i++){
+        printf(" %c",q->arr[i]);
+    }
+    printf("\n");
+}
+
+int main(){
+    Queue q;
+    initialize(&q);
+    while(1){
+        int ch;
+        scanf("%d",&ch);
+        
+        switch(ch){
+            case 1:{
+                char item;
+                scanf(" %c",&item);
+                enqueue(&q,item);
+                break;
+            }
+            
+            case 2:{
+                dequeue(&q);
+                break;
+            }
+            
+            case 3:{
+                display(&q);
+                break;
+            }
+            
+            case 4:{
+                printf("Exiting program\n");
+                exit(0);
+                break;
+            }
+            
+            default:{
+                printf("Invalid option.\n");
+                break;
+            }
+        }
+    }
+    return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
