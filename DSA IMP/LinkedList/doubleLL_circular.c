@@ -1,420 +1,462 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-/* 
-   Doubly Circular Linked List Operations:
-
-   1. **createNode(int data)**: 
-      - Creates a new node with given data, next and prev pointers set to NULL.
-
-   2. **insert**:
-     - **insertAtBeginning(struct Node** head, int data)**: Inserts a node at the beginning.
-     - **insertAtEnd(struct Node** head, int data)**: Inserts a node at the end.
-     - **insertAtPosition(struct Node** head, int data, int pos)**: Inserts a node at a specific position.
-     - **insertAfterNode(struct Node* prevNode, int data)**: Inserts a node after a given node.
-     - **insertInPlace(struct Node** head, int oldData, int newData)**: Inserts new data in place of old data.
-
-   3. **delete**:
-     - **deleteAtBeginning(struct Node** head)**: Deletes the node at the beginning.
-     - **deleteAtEnd(struct Node** head)**: Deletes the node at the end.
-     - **deleteAtPosition(struct Node** head, int pos)**: Deletes the node at a specific position.
-     - **deleteNode(struct Node** head, int key)**: Deletes a node with the specified key.
-
-   4. **searchNode(struct Node* head, int key)**: Searches for a node with a specific key.
-
-   5. **traverseList(struct Node* head)**: Prints all nodes in the list from head to end.
-
-   6. **lengthOfList(struct Node* head)**: Returns the number of nodes in the list.
-
-   7. **reverseList(struct Node** head)**: Reverses the list.
-
-   8. **findMiddleNode(struct Node* head)**: Finds and prints the middle node.
-
-   9. **detectLoop(struct Node* head)**: Detects if there is a loop in the list.
-
-   10. **removeDuplicates(struct Node* head)**: Removes duplicate nodes from the list.
-*/
-
-// Definition of a doubly circular linked list node
+// Define the structure for a node
 struct Node {
     int data;
-    struct Node* next; // Pointer to the next node
-    struct Node* prev; // Pointer to the previous node
+    struct Node* prev;
+    struct Node* next;
 };
 
-// Function to create a new node
+// 1. Function to create a new node
 struct Node* createNode(int data) {
     struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
-    if (newNode != NULL) {
-        newNode->data = data;
-        newNode->next = newNode; // Point to itself
-        newNode->prev = newNode; // Point to itself
+    if (newNode == NULL) {
+        printf("Memory allocation failed\n");
+        exit(1);
     }
+    newNode->data = data;
+    newNode->prev = newNode;
+    newNode->next = newNode;
     return newNode;
 }
 
-// Function to insert a node at the beginning
-void insertAtBeginning(struct Node** head, int data) {
-    struct Node* newNode = createNode(data);
+// 2.a Function to insert at the beginning
+struct Node* insertAtBeginning(struct Node** head, int data) {
+    // CASE 1: Empty list
     if (*head == NULL) {
-        *head = newNode; // If the list is empty, the new node becomes the head
-    } else {
-        struct Node* tail = (*head)->prev; // Get the last node
-        newNode->next = *head; // Link new node to head
-        newNode->prev = tail; // Link new node to tail
-        tail->next = newNode; // Link tail to new node
-        (*head)->prev = newNode; // Link head to new node
-        *head = newNode; // Update head to new node
+        *head = createNode(data);
     }
-}
-
-// Function to insert a node at the end
-void insertAtEnd(struct Node** head, int data) {
-    struct Node* newNode = createNode(data);
-    if (*head == NULL) {
-        *head = newNode; // If the list is empty, the new node becomes the head
-    } else {
-        struct Node* tail = (*head)->prev; // Get the last node
-        newNode->next = *head; // Link new node to head
-        newNode->prev = tail; // Link new node to tail
-        tail->next = newNode; // Link tail to new node
-        (*head)->prev = newNode; // Link head to new node
-    }
-}
-
-// Function to insert a node at a specific position
-void insertAtPosition(struct Node** head, int data, int pos) {
-    struct Node* newNode = createNode(data);
-    if (pos == 0) {
-        insertAtBeginning(head, data); // If position is 0, insert at the beginning
-    } else {
-        struct Node* temp = *head;
-        for (int i = 0; i < pos - 1 && temp != NULL; i++) {
-            temp = temp->next; // Traverse to the specified position
-        }
-        if (temp != NULL) {
-            newNode->next = temp->next; // Link new node to next node
-            newNode->prev = temp; // Link new node to current node
-            temp->next->prev = newNode; // Link next node to new node
-            temp->next = newNode; // Link current node to new node
-        } else {
-            printf("Position out of bounds\n");
-        }
-    }
-}
-
-// Function to insert a node after a given node
-void insertAfterNode(struct Node* prevNode, int data) {
-    if (prevNode == NULL) {
-        printf("The given previous node cannot be NULL\n");
-    } else {
+    // CASE 2: Non-empty list
+    else {
         struct Node* newNode = createNode(data);
-        newNode->next = prevNode->next; // Link new node to next node
-        newNode->prev = prevNode; // Link new node to previous node
-        prevNode->next->prev = newNode; // Link next node to new node
-        prevNode->next = newNode; // Link previous node to new node
+        newNode->next = *head;
+        newNode->prev = (*head)->prev;
+        (*head)->prev->next = newNode;
+        (*head)->prev = newNode;
+        *head = newNode;
     }
+    return *head;
 }
 
-// Function to insert new data in place of old data
-void insertInPlace(struct Node** head, int oldData, int newData) {
+// 2.b Function to insert at the end
+struct Node* insertAtEnd(struct Node** head, int data) {
+    // CASE 1: Empty list
     if (*head == NULL) {
-        printf("List is empty\n");
-    } else {
+        *head = createNode(data);
+    }
+    // CASE 2: Non-empty list
+    else {
+        struct Node* newNode = createNode(data);
+        newNode->next = *head;
+        newNode->prev = (*head)->prev;
+        (*head)->prev->next = newNode;
+        (*head)->prev = newNode;
+    }
+    return *head;
+}
+
+// 2.c Function to insert at a specific position
+struct Node* insertAtPosition(struct Node** head, int data, int position) {
+    // CASE 1: Invalid position
+    if (position < 1) {
+        printf("Invalid position\n");
+        return *head;
+    }
+    // CASE 2: Insert at beginning
+    else if (position == 1) {
+        return insertAtBeginning(head, data);
+    }
+    // CASE 3: Insert at specific position
+    else {
+        struct Node* newNode = createNode(data);
         struct Node* temp = *head;
-        do {
-            if (temp->data == oldData) {
-                temp->data = newData; // Replace old data with new data
-                return;
-            }
-            temp = temp->next; // Move to the next node
-        } while (temp != *head);
-        printf("Old data %d not found in the list\n", oldData);
+        for (int i = 1; i < position - 1 && temp->next != *head; i++) {
+            temp = temp->next;
+        }
+        newNode->next = temp->next;
+        newNode->prev = temp;
+        temp->next->prev = newNode;
+        temp->next = newNode;
+    }
+    return *head;
+}
+
+// 2.d Function to insert after a given node
+void insertAfterNode(struct Node* prevNode, int data) {
+    // CASE 1: Invalid previous node
+    if (prevNode == NULL) {
+        printf("Previous node cannot be NULL\n");
+        return;
+    }
+    // CASE 2: Insert after the given node
+    else {
+        struct Node* newNode = createNode(data);
+        newNode->next = prevNode->next;
+        newNode->prev = prevNode;
+        prevNode->next->prev = newNode;
+        prevNode->next = newNode;
     }
 }
 
-// Function to delete a node at the beginning
-void deleteAtBeginning(struct Node** head) {
+// 3.a Function to delete at the beginning
+struct Node* deleteAtBeginning(struct Node** head) {
+    // CASE 1: Empty list
     if (*head == NULL) {
         printf("List is empty\n");
-    } else {
+        return NULL;
+    }
+    // CASE 2: Only one node
+    else if ((*head)->next == *head) {
+        free(*head);
+        *head = NULL;
+    }
+    // CASE 3: More than one node
+    else {
         struct Node* temp = *head;
-        struct Node* tail = (*head)->prev; // Get the last node
-        if (temp == tail) {
-            free(temp); // If it's the only node, free it
-            *head = NULL; // Update head to NULL
-        } else {
-            tail->next = temp->next; // Link tail to second node
-            temp->next->prev = tail; // Link second node to tail
-            free(temp); // Free the old head
-            *head = tail->next; // Update head to the new head
-        }
+        (*head)->prev->next = (*head)->next;
+        (*head)->next->prev = (*head)->prev;
+        *head = (*head)->next;
+        free(temp);
     }
+    return *head;
 }
 
-// Function to delete a node at the end
-void deleteAtEnd(struct Node** head) {
+// 3.b Function to delete at the end
+struct Node* deleteAtEnd(struct Node** head) {
+    // CASE 1: Empty list
     if (*head == NULL) {
         printf("List is empty\n");
-    } else {
-        struct Node* tail = (*head)->prev; // Get the last node
-        if (tail == *head) {
-            free(tail); // If it's the only node, free it
-            *head = NULL; // Update head to NULL
-        } else {
-            struct Node* newTail = tail->prev; // Get the new tail
-            newTail->next = *head; // Link new tail to head
-            (*head)->prev = newTail; // Link head to new tail
-            free(tail); // Free the old tail
-        }
+        return NULL;
     }
+    // CASE 2: Only one node
+    else if ((*head)->next == *head) {
+        free(*head);
+        *head = NULL;
+    }
+    // CASE 3: More than one node
+    else {
+        struct Node* lastNode = (*head)->prev;
+        lastNode->prev->next = *head;
+        (*head)->prev = lastNode->prev;
+        free(lastNode);
+    }
+    return *head;
 }
 
-// Function to delete a node at a specific position
-void deleteAtPosition(struct Node** head, int pos) {
-    if (*head == NULL) {
-        printf("List is empty\n");
-    } else if (pos == 0) {
-        deleteAtBeginning(head); // If position is 0, delete at the beginning
-    } else {
+// 3.c Function to delete at a specific position
+struct Node* deleteAtPosition(struct Node** head, int position) {
+    // CASE 1: Invalid position or empty list
+    if (*head == NULL || position < 1) {
+        printf("Invalid operation\n");
+        return *head;
+    }
+    // CASE 2: Delete first node
+    else if (position == 1) {
+        return deleteAtBeginning(head);
+    }
+    // CASE 3: Delete at specific position
+    else {
         struct Node* temp = *head;
-        for (int i = 0; i < pos && temp != NULL; i++) {
-            temp = temp->next; // Traverse to the specified position
+        for (int i = 1; i < position && temp->next != *head; i++) {
+            temp = temp->next;
         }
-        if (temp != NULL) {
-            if (temp->next == *head) {
-                deleteAtEnd(head); // If it's the last node, delete at the end
-            } else {
-                temp->prev->next = temp->next; // Link previous node to next node
-                temp->next->prev = temp->prev; // Link next node to previous node
-                free(temp); // Free the deleted node
-            }
-        } else {
-            printf("Position out of bounds\n");
+        if (temp == *head) {
+            printf("Position out of range\n");
+            return *head;
         }
+        temp->prev->next = temp->next;
+        temp->next->prev = temp->prev;
+        free(temp);
     }
+    return *head;
 }
 
-// Function to delete a node with the specified key
-void deleteNode(struct Node** head, int key) {
+// 3.d Function to delete a node with a specific key
+struct Node* deleteNode(struct Node** head, int key) {
+    // CASE 1: Empty list
     if (*head == NULL) {
         printf("List is empty\n");
-    } else {
-        struct Node* temp = *head;
-        do {
-            if (temp->data == key) {
-                if (temp == *head) {
-                    deleteAtBeginning(head); // If it's the head, delete at the beginning
-                } else {
-                    temp->prev->next = temp->next; // Link previous node to next node
-                    temp->next->prev = temp->prev; // Link next node to previous node
-                    free(temp); // Free the deleted node
-                }
-                return;
-            }
-            temp = temp->next; // Move to the next node
-        } while (temp != *head);
-        printf("Key %d not found in the list\n", key);
+        return NULL;
     }
+    // CASE 2: Key is in the first node
+    else if ((*head)->data == key) {
+        return deleteAtBeginning(head);
+    }
+    // CASE 3: Key is in other nodes
+    else {
+        struct Node* temp = (*head)->next;
+        while (temp != *head && temp->data != key) {
+            temp = temp->next;
+        }
+        if (temp == *head) {
+            printf("Key not found\n");
+            return *head;
+        }
+        temp->prev->next = temp->next;
+        temp->next->prev = temp->prev;
+        free(temp);
+    }
+    return *head;
 }
 
-// Function to search for a node with a specific key
-void searchNode(struct Node* head, int key) {
+// 4. Function to search for a node with a specific key
+struct Node* searchNode(struct Node* head, int key) {
+    // CASE 1: Empty list
     if (head == NULL) {
         printf("List is empty\n");
-    } else {
+        return NULL;
+    }
+    // CASE 2: Search for the key
+    else {
         struct Node* temp = head;
         do {
             if (temp->data == key) {
-                printf("Node with key %d found\n", key);
-                return;
+                return temp;
             }
-            temp = temp->next; // Move to the next node
+            temp = temp->next;
         } while (temp != head);
-        printf("Node with key %d not found\n", key);
+        printf("Key not found\n");
+        return NULL;
     }
 }
 
-// Function to print all nodes in the list
-void traverseList(struct Node* head) {
+// 5.a Function to traverse and print the list forward
+void traversalList_forward(struct Node* head) {
+    // CASE 1: Empty list
     if (head == NULL) {
         printf("List is empty\n");
-    } else {
+        return;
+    }
+    // CASE 2: Print the list
+    else {
         struct Node* temp = head;
+        printf("Forward Traversal: ");
         do {
-            printf("%d ", temp->data); // Print node data
-            temp = temp->next; // Move to the next node
+            printf("%d <-> ", temp->data);
+            temp = temp->next;
         } while (temp != head);
-        printf("\n");
+        printf("(back to start)\n");
     }
 }
 
-// Function to return the number of nodes in the list
+// 5.b Function to traverse and print the list backward
+void traversalList_backward(struct Node* head) {
+    // CASE 1: Empty list
+    if (head == NULL) {
+        printf("List is empty\n");
+        return;
+    }
+    // CASE 2: Print the list
+    else {
+        struct Node* temp = head->prev;
+        printf("Backward Traversal: ");
+        do {
+            printf("%d <-> ", temp->data);
+            temp = temp->prev;
+        } while (temp != head->prev);
+        printf("(back to start)\n");
+    }
+}
+
+// 6. Function to find the length of the list
 int lengthOfList(struct Node* head) {
+    // CASE 1: Empty list
     if (head == NULL) {
         return 0;
     }
-    int count = 0;
-    struct Node* temp = head;
-    do {
-        count++; // Count nodes
-        temp = temp->next; // Move to the next node
-    } while (temp != head);
-    return count;
-}
-
-// Function to reverse the list
-void reverseList(struct Node** head) {
-    if (*head == NULL) {
-        printf("List is empty\n");
-        return;
+    // CASE 2: Count the nodes
+    else {
+        int count = 0;
+        struct Node* temp = head;
+        do {
+            count++;
+            temp = temp->next;
+        } while (temp != head);
+        return count;
     }
-    struct Node *current = *head, *temp = NULL, *prev = NULL;
-    do {
-        temp = current->prev; // Store previous node
-        current->prev = current->next; // Swap next and prev
-        current->next = temp; // Swap next and prev
-        prev = current; // Update prev
-        current = current->prev; // Move to next node
-    } while (current != *head);
-    *head = prev; // Update head to the new head
 }
 
-// Function to find and print the middle node
+// 7. Function to reverse the list
+struct Node* reverseList(struct Node** head) {
+    // CASE 1: Empty list or only one node
+    if (*head == NULL || (*head)->next == *head) {
+        return *head;
+    }
+    // CASE 2: Reverse the list
+    else {
+        struct Node* current = *head;
+        struct Node* temp;
+        do {
+            temp = current->prev;
+            current->prev = current->next;
+            current->next = temp;
+            current = current->prev;
+        } while (current != *head);
+        *head = (*head)->next;
+        return *head;
+    }
+}
+
+// 8. Function to find the middle node
 void findMiddleNode(struct Node* head) {
+    // CASE 1: Empty list
     if (head == NULL) {
         printf("List is empty\n");
         return;
     }
-    struct Node* slow = head;
-    struct Node* fast = head;
-    while (fast->next != head && fast->next->next != head) {
-        slow = slow->next; // Move slow pointer by one
-        fast = fast->next->next; // Move fast pointer by two
+    // CASE 2: Find the middle node
+    else {
+        struct Node* slow = head;
+        struct Node* fast = head;
+        while (fast->next != head && fast->next->next != head) {
+            slow = slow->next;
+            fast = fast->next->next;
+        }
+        printf("Middle node: %d\n", slow->data);
     }
-    printf("Middle node is %d\n", slow->data);
 }
 
-// Function to detect if there is a loop in the list
-void detectLoop(struct Node* head) {
-    if (head == NULL) {
-        printf("List is empty\n");
-        return;
+// 9. Function to detect a loop
+int detectLoop(struct Node* head) {
+    // Note: In a circular doubly linked list, there's always a loop
+    return (head != NULL);
+}
+
+// 10. Function to remove duplicates
+struct Node* removeDuplicates(struct Node* head) {
+    // CASE 1: Empty list or only one node
+    if (head == NULL || head->next == head) {
+        return head;
     }
-    struct Node* slow = head;
-    struct Node* fast = head;
-    while (fast != NULL && fast->next != head) {
-        slow = slow->next; // Move slow pointer by one
-        fast = fast->next->next; // Move fast pointer by two
-        if (slow == fast) {
-            printf("Loop detected in the list\n");
+    // CASE 2: Remove duplicates
+    else {
+        struct Node* current = head;
+        do {
+            struct Node* runner = current->next;
+            while (runner != head) {
+                if (runner->data == current->data) {
+                    struct Node* temp = runner;
+                    runner->prev->next = runner->next;
+                    runner->next->prev = runner->prev;
+                    runner = runner->next;
+                    free(temp);
+                } else {
+                    runner = runner->next;
+                }
+            }
+            current = current->next;
+        } while (current != head);
+        return head;
+    }
+}
+
+// 11. Function to swap two nodes
+void swapNodes(struct Node** head, int x, int y) {
+    // CASE 1: x and y are same
+    if (x == y) return;
+
+    // CASE 2: Search for x and y
+    struct Node *prevX = NULL, *currX = *head;
+    while (currX->data != x) {
+        prevX = currX;
+        currX = currX->next;
+        if (currX == *head) {
+            printf("x not found in the list\n");
             return;
         }
     }
-    printf("No loop detected in the list\n");
-}
 
-// Function to remove duplicate nodes from the list
-void removeDuplicates(struct Node* head) {
-    if (head == NULL) {
-        printf("List is empty\n");
-        return;
-    }
-    struct Node* current = head;
-    do {
-        struct Node* runner = current->next;
-        while (runner != head) {
-            if (current->data == runner->data) {
-                struct Node* temp = runner; // Store node to be deleted
-                runner->prev->next = runner->next; // Link previous node to next
-                runner->next->prev = runner->prev; // Link next node to previous
-                runner = runner->next; // Move runner to next
-                free(temp); // Free the deleted node
-            } else {
-                runner = runner->next; // Move runner to next
-            }
+    struct Node *prevY = NULL, *currY = *head;
+    while (currY->data != y) {
+        prevY = currY;
+        currY = currY->next;
+        if (currY == *head) {
+            printf("y not found in the list\n");
+            return;
         }
-        current = current->next; // Move current to next
-    } while (current != head);
+    }
+
+    // CASE 3: If either x or y is head
+    if (currX == *head) *head = currY;
+    else if (currY == *head) *head = currX;
+
+    // CASE 4: Swap the nodes
+    struct Node* temp;
+    temp = currX->next;
+    currX->next = currY->next;
+    currY->next = temp;
+
+    temp = currX->prev;
+    currX->prev = currY->prev;
+    currY->prev = temp;
+
+    if (currX->next != currY) currX->next->prev = currX;
+    if (currX->prev != currY) currX->prev->next = currX;
+    if (currY->next != currX) currY->next->prev = currY;
+    if (currY->prev != currX) currY->prev->next = currY;
+
+    if (prevX != NULL && prevX != currY) prevX->next = currY;
+    if (prevY != NULL && prevY != currX) prevY->next = currX;
 }
 
-// Main function to demonstrate the functionality
 int main() {
     struct Node* head = NULL;
 
-    // Inserting nodes at the beginning
-    insertAtBeginning(&head, 10);
-    // List state: 10
-    traverseList(head); // Expected Output: 10
+    // Test insertions
+    head = insertAtBeginning(&head, 1);
+    head = insertAtEnd(&head, 3);
+    head = insertAtPosition(&head, 2, 2);
+    insertAfterNode(head->next, 4);
 
-    // Inserting nodes at the end
-    insertAtEnd(&head, 20);
-    insertAtEnd(&head, 30);
-    // List state: 10 <-> 20 <-> 30
-    traverseList(head); // Expected Output: 10 20 30
+    printf("After insertions:\n");
+    traversalList_forward(head);
+    traversalList_backward(head);
 
-    // Inserting nodes at specific positions
-    insertAtPosition(&head, 25, 2);
-    // List state: 10 <-> 20 <-> 25 <-> 30
-    traverseList(head); // Expected Output: 10 20 25 30
+    // Test deletions
+    head = deleteAtBeginning(&head);
+    head = deleteAtEnd(&head);
+    head = deleteAtPosition(&head, 2);
+    head = deleteNode(&head, 2);
 
-    // Inserting after a specific node
-    insertAfterNode(head->next, 22);
-    // List state: 10 <-> 20 <-> 22 <-> 25 <-> 30
-    traverseList(head); // Expected Output: 10 20 22 25 30
+    printf("After deletions:\n");
+    traversalList_forward(head);
 
-    // Replacing old data with new data
-    insertInPlace(&head, 22, 23);
-    // List state: 10 <-> 20 <-> 23 <-> 25 <-> 30
-    traverseList(head); // Expected Output: 10 20 23 25 30
+    // Test search
+    struct Node* found = searchNode(head, 4);
+    if (found) printf("Node with data 4 found\n");
 
-    // Deleting a node at the beginning
-    deleteAtBeginning(&head);
-    // List state: 20 <-> 23 <-> 25 <-> 30
-    traverseList(head); // Expected Output: 20 23 25 30
+    // Test length
+    printf("Length of list: %d\n", lengthOfList(head));
 
-    // Deleting a node at the end
-    deleteAtEnd(&head);
-    // List state: 20 <-> 23 <-> 25
-    traverseList(head); // Expected Output: 20 23 25
+    // Test reverse
+    head = reverseList(&head);
+    printf("After reversal:\n");
+    traversalList_forward(head);
 
-    // Deleting a node at a specific position
-    deleteAtPosition(&head, 1);
-    // List state: 20 <-> 25
-    traverseList(head); // Expected Output: 20 25
+    // Test middle node
+    findMiddleNode(head);
 
-    // Deleting a node with a specific key
-    deleteNode(&head, 20);
-    // List state: 25
-    traverseList(head); // Expected Output: 25
+    // Test loop detection
+    printf("Loop detected: %s\n", detectLoop(head) ? "Yes" : "No");
 
-    // Searching for a node with a specific key
-    searchNode(head, 25); // Expected Output: Node with key 25 found
-    searchNode(head, 30); // Expected Output: Node with key 30 not found
+    // Test remove duplicates
+    head = insertAtEnd(&head, 4);
+    head = insertAtEnd(&head, 4);
+    printf("Before removing duplicates:\n");
+    traversalList_forward(head);
+    head = removeDuplicates(head);
+    printf("After removing duplicates:\n");
+    traversalList_forward(head);
 
-    // Length of the list
-    printf("Length of the list: %d\n", lengthOfList(head)); // Expected Output: 1
-
-    // Inserting some more nodes
-    insertAtEnd(&head, 35);
-    insertAtEnd(&head, 45);
-    // List state: 25 <-> 35 <-> 45
-    traverseList(head); // Expected Output: 25 35 45
-
-    // Reversing the list
-    reverseList(&head);
-    // List state: 45 <-> 35 <-> 25
-    traverseList(head); // Expected Output: 45 35 25
-
-    // Finding the middle node
-    findMiddleNode(head); // Expected Output: Middle node is 35
-
-    // Detecting loops
-    detectLoop(head); // Expected Output: No loop detected in the list
-
-    // Removing duplicates (none in this case)
-    removeDuplicates(head);
-    traverseList(head); // Expected Output: 45 35 25
+    // Test swap nodes
+    head = insertAtEnd(&head, 5);
+    head = insertAtEnd(&head, 6);
+    printf("Before swapping nodes:\n");
+    traversalList_forward(head);
+    swapNodes(&head, 4, 6);
+    printf("After swapping nodes 4 and 6:\n");
+    traversalList_forward(head);
 
     return 0;
 }
