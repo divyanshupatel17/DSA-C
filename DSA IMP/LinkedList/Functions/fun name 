@@ -4,3 +4,8 @@ rotateListClockwiseByK
 removeDuplicate
 concatList
 splitList
+
+1. Singly Linked list (non - circular)
+2. Singly Linked list (circular)
+3. Doubly Linked list (non - circular)
+4. Doubly Linked list (circular)
