@@ -1,3 +1,10 @@
+Problem 	                                    Operation	                                Method Used	        Alternative Methods
+
+1. Cycle Detection in an Undirected Graph	    DFS traversal to check for cycles	        hasCycle() (DFS)	BFS for cycle detection
+2. Shortest Path in an Undirected Graph	        BFS traversal to find shortest path	        findPath() (BFS)	Dijkstra's algorithm (for weighted graphs) or DFS with backtracking
+'
+
+
 1.
 Problem Statement
 
