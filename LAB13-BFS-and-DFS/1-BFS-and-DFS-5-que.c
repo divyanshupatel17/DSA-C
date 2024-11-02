@@ -322,6 +322,14 @@ Note :
 // Directions arrays for the 8 possible moves
 int rowDir[] = {-1, -1, -1, 0, 0, 1, 1, 1};
 int colDir[] = {-1, 0, 1, -1, 1, -1, 0, 1};
+// (-1, -1): Up-Left diagonal
+// (-1,  0): Up
+// (-1,  1): Up-Right diagonal
+// ( 0, -1): Left
+// ( 0,  1): Right
+// ( 1, -1): Down-Left diagonal
+// ( 1,  0): Down
+// ( 1,  1): Down-Right diagonal
 
 // Utility function to check if the given coordinates are within matrix bounds
 int isValid(int x, int y, int n, int m) {
