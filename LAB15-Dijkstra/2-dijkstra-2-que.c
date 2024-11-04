@@ -97,7 +97,7 @@ Input 4 :
 4
 Output 4 :
 No path found
-Note :'
+Note :
 
 #include <stdio.h>
 #include <stdbool.h>
