@@ -311,53 +311,16 @@ Vertex 	Distance from Source
 7			 8
 8			 14
 Note : Result
-0/2 Sample testcase passed
-Compiler Message
-Compilation successful
-Sample Testcase
-Testcase 1 - Failed
-Expected Output
-Vertex 	Distance from Source
-0			 0
-1			 2
-2			 3
-Output
-Vertex   Distance from Source
-0           0
-1           2
-2           3
-Testcase 2 - Failed
-Expected Output
-Vertex 	Distance from Source
-0			 0
-1			 4
-2			 12
-3			 19
-4			 21
-5			 11
-6			 9
-7			 8
-8			 14
-Output
-Vertex   Distance from Source
-0           0
-1           4
-2           12
-3           19
-4           21
-5           11
-6           9
-7           8
-8           14  #include <stdio.h>
+#include <stdio.h>
 #include <stdbool.h>
 #include <limits.h>
 
 #define MAX 100
 
-int findMinDist(int dist[], bool visited[], int v){
-    int min = INT_MAX, minIdx;
-    for(int i=0 ; i<v ; i++){
-        if(visited[i]==false && dist[i] < min){
+int findMinDist(int dist[], bool visited[], int v) {
+    int min = INT_MAX, minIdx = -1;
+    for (int i = 0; i < v; i++) {
+        if (!visited[i] && dist[i] < min) {
             min = dist[i];
             minIdx = i;
         }
@@ -365,46 +328,46 @@ int findMinDist(int dist[], bool visited[], int v){
     return minIdx;
 }
 
-void dijkstra(int graph[MAX][MAX], int v, int src){
+void dijkstra(int graph[MAX][MAX], int v, int src) {
     int dist[MAX];
     bool visited[MAX];
-    
-    for(int i=0 ; i<v ; i++){
+
+    for (int i = 0; i < v; i++) {
         dist[i] = INT_MAX;
         visited[i] = false;
     }
-    
+
     dist[src] = 0;
-    visited[src] = true;
-    
-    for(int count=0 ; count<v-1 ; count++){
-        int x = findMinDist(dist,visited,v);
+
+    for (int count = 0; count < v - 1; count++) {
+        int x = findMinDist(dist, visited, v);
         visited[x] = true;
-        for(int y=0 ; y<v ; y++){
-            if(visited[y]==false && graph[x][y] && dist[x]!=INT_MAX && dist[x]+graph[x][y] < dist[y]){
+
+        for (int y = 0; y < v; y++) {
+            if (!visited[y] && graph[x][y] && dist[x] != INT_MAX && dist[x] + graph[x][y] < dist[y]) {
                 dist[y] = dist[x] + graph[x][y];
             }
         }
     }
-    printf("Vertex   Distance from Source\n");
-    for(int i=0 ; i<v ; i++){
-        printf("%d           %d\n",i,dist[i]);
+
+    printf("Vertex \tDistance from Source\n");
+    for (int i = 0; i < v; i++) {
+        printf("%d\t\t\t %d\n", i, dist[i]);
     }
 }
 
-int main(){
+int main() {
     int v;
-    scanf("%d",&v);
+    scanf("%d", &v);
     int graph[MAX][MAX] = {0};
-    for(int i=0 ; i<v ; i++){
-        for(int j=0 ; j<v ; j++){
-            
-            scanf("%d",&graph[i][j]);
-            
+    for (int i = 0; i < v; i++) {
+        for (int j = 0; j < v; j++) {
+            scanf("%d", &graph[i][j]);
         }
     }
     int src;
-    scanf("%d",&src);
-    dijkstra(graph,v,src);
+    scanf("%d", &src);
+    dijkstra(graph, v, src);
     return 0;
-} code is correct but format output according to que 
+}
+
