@@ -76,7 +76,7 @@ Output 2 :
 2 3
 Note :
 
-;'
+;
 #include <stdio.h>
 #include <limits.h>
 #include <stdbool.h>
