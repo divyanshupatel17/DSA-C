@@ -391,6 +391,89 @@ Exists path between 0 and 4 with limit 6: true
 Exists path between 2 and 4 with limit 7: true
 Note : 
 
+// easy
+
+#include <stdio.h>
+#include <stdbool.h>
+#include <limits.h>
+
+#define MAX 100000  // Maximum number of vertices
+#define INF 99999999  // Representation of no edge between vertices
+
+// Function to find the vertex with the minimum key value from the set of vertices not yet included in MST
+int minKey(int key[], bool mstSet[], int V) {
+    int min = INF, minIndex;
+
+    // Iterate over all vertices to find the minimum key value
+    for (int v = 0; v < V; v++) {
+        if (!mstSet[v] && key[v] < min) {
+            min = key[v];
+            minIndex = v;
+        }
+    }
+    return minIndex;  // Return index of vertex with minimum key value
+}
+
+// Function to implement Prim's algorithm for MST and determine connectivity
+void primMST(int graph[MAX][MAX], int V, int limit, bool mstSet[]) {
+    int key[MAX];     // Key values used to pick the minimum weight edge
+    for (int i = 0; i < V; i++) {
+        key[i] = INF;  // Set initial key value to infinity
+        mstSet[i] = false;  // Mark all vertices as not included in MST
+    }
+
+    key[0] = 0;  // Start from the first vertex
+    for (int count = 0; count < V - 1; count++) {
+        int u = minKey(key, mstSet, V); // Pick vertex u with the smallest key value not in MST
+        mstSet[u] = true; // Include vertex u in MST
+
+        // Update the key and parent for the adjacent vertices of u
+        for (int v = 0; v < V; v++) {
+            if (graph[u][v] && !mstSet[v] && graph[u][v] <= limit) {
+                key[v] = graph[u][v]; // Update key with weight of the edge u-v
+            }
+        }
+    }
+}
+
+bool isPathExists(int graph[MAX][MAX], int V, int src, int dest, int limit) {
+    bool mstSet[MAX] = {false};  // Track visited vertices
+    primMST(graph, V, limit, mstSet);
+    return mstSet[dest];  // Check if destination is included in the MST with the given limit
+}
+
+int main() {
+    int V, M;
+    scanf("%d", &V);
+    scanf("%d", &M);
+    
+    int graph[MAX][MAX] = {0};  // Initialize graph
+
+    // Input the edges
+    for (int i = 0; i < M; i++) {
+        int u, v, w;
+        scanf("%d %d %d", &u, &v, &w);
+        graph[u][v] = w;
+        graph[v][u] = w;  // Undirected graph
+    }
+
+    int Q;  // Number of queries
+    scanf("%d", &Q);
+    
+    // Process each query
+    for (int i = 0; i < Q; i++) {
+        int s, d, l;
+        scanf("%d %d %d", &s, &d, &l);
+        
+        // Check if a path exists
+        bool exists = isPathExists(graph, V, s, d, l);
+        printf("Exists path between %d and %d with limit %d: %s\n", s, d, l, exists ? "true" : "false");
+    }
+
+    return 0;
+}
+ // hard
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
