@@ -182,3 +182,229 @@ int main(){
     dijkstra(graph,v,src,dest);
     return 0;
 }
+
+Single File Programming Question
+Problem Statement
+
+
+
+Given a graph and a source vertex in the graph, find the shortest paths from the source to all vertices in the given graph.
+
+
+
+Example
+
+
+
+Input: 
+
+source = 0, the graph is shown below.
+
+
+
+
+
+
+
+Output: 
+
+0 4 12 19 21 11 9 8 14
+
+
+
+Explanation: 
+
+The distance from 0 to 1 = 4.
+
+The minimum distance from 0 to 2 = 12.
+
+0->1->2
+
+The minimum distance from 0 to 3 = 19.
+
+0->1->2->3
+
+The minimum distance from 0 to 4 = 21.
+
+0->7->6->5->4
+
+The minimum distance from 0 to 5 = 11.
+
+0->7->6->5
+
+The minimum distance from 0 to 6 = 9.
+
+0->7->6
+
+The minimum distance from 0 to 7 = 8.
+
+0->7
+
+The minimum distance from 0 to 8 = 14.
+
+0->1->2->8
+
+Input format :
+The first line of input consists of the number of vertices, V in the graph.
+
+The next lines of input consist of an adjacency matrix graph of size V x V representing the graph.
+
+The last line of input consists of an integer representing the source vertex.
+
+
+
+Refer to the sample input for formatting specifications.
+
+Output format :
+For each vertex v, print the line v distance, where v is the vertex index and distance is the minimum distance from the source vertex to v in the following format:
+
+
+
+"Vertex" followed by a space and then use tab space after print "Distance from Source"
+
+vertex1 followed by three tab spaces and then use a space after print source1.
+
+
+
+Refer to the sample output for formatting specifications.
+
+Code constraints :
+1 ≤ V ≤ 6
+
+0 ≤ src < V
+
+Edge weights are positive integers or zero.
+
+Sample test cases :
+Input 1 :
+3
+0 2 5
+2 0 1
+5 1 0
+0
+Output 1 :
+Vertex 	Distance from Source
+0			 0
+1			 2
+2			 3
+Input 2 :
+9
+0 4 0 0 0 0 0 8 0
+4 0 8 0 0 0 0 11 0
+0 8 0 7 0 4 0 0 2
+0 0 7 0 9 14 0 0 0
+0 0 0 9 0 10 0 0 0
+0 0 4 14 10 0 2 0 0
+0 0 0 0 0 2 0 1 6
+8 11 0 0 0 0 1 0 7
+0 0 2 0 0 0 6 7 0
+0
+Output 2 :
+Vertex 	Distance from Source
+0			 0
+1			 4
+2			 12
+3			 19
+4			 21
+5			 11
+6			 9
+7			 8
+8			 14
+Note : Result
+0/2 Sample testcase passed
+Compiler Message
+Compilation successful
+Sample Testcase
+Testcase 1 - Failed
+Expected Output
+Vertex 	Distance from Source
+0			 0
+1			 2
+2			 3
+Output
+Vertex   Distance from Source
+0           0
+1           2
+2           3
+Testcase 2 - Failed
+Expected Output
+Vertex 	Distance from Source
+0			 0
+1			 4
+2			 12
+3			 19
+4			 21
+5			 11
+6			 9
+7			 8
+8			 14
+Output
+Vertex   Distance from Source
+0           0
+1           4
+2           12
+3           19
+4           21
+5           11
+6           9
+7           8
+8           14  #include <stdio.h>
+#include <stdbool.h>
+#include <limits.h>
+
+#define MAX 100
+
+int findMinDist(int dist[], bool visited[], int v){
+    int min = INT_MAX, minIdx;
+    for(int i=0 ; i<v ; i++){
+        if(visited[i]==false && dist[i] < min){
+            min = dist[i];
+            minIdx = i;
+        }
+    }
+    return minIdx;
+}
+
+void dijkstra(int graph[MAX][MAX], int v, int src){
+    int dist[MAX];
+    bool visited[MAX];
+    
+    for(int i=0 ; i<v ; i++){
+        dist[i] = INT_MAX;
+        visited[i] = false;
+    }
+    
+    dist[src] = 0;
+    visited[src] = true;
+    
+    for(int count=0 ; count<v-1 ; count++){
+        int x = findMinDist(dist,visited,v);
+        visited[x] = true;
+        for(int y=0 ; y<v ; y++){
+            if(visited[y]==false && graph[x][y] && dist[x]!=INT_MAX && dist[x]+graph[x][y] < dist[y]){
+                dist[y] = dist[x] + graph[x][y];
+            }
+        }
+    }
+    printf("Vertex   Distance from Source\n");
+    for(int i=0 ; i<v ; i++){
+        printf("%d           %d\n",i,dist[i]);
+    }
+}
+
+int main(){
+    int v;
+    scanf("%d",&v);
+    int graph[MAX][MAX] = {0};
+    for(int i=0 ; i<v ; i++){
+        for(int j=0 ; j<v ; j++){
+            
+            scanf("%d",&graph[i][j]);
+            
+        }
+    }
+    int src;
+    scanf("%d",&src);
+    dijkstra(graph,v,src);
+    return 0;
+} code is correct but format output according to que 
