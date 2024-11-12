@@ -1,3 +1,5 @@
+M6. HASHING
+M8. HEAPS & AVL
 1. Stack(array)
 2. Linear QUEUE INT
 3. Circular Queue INT
@@ -12,6 +14,451 @@
 12. DIJKSTRA
 13. MST
 14. BINARY TREE 
+=====================================================================
+M6. HASHING
+
+Hashing Functions:
+
+insertChaining (Separate Chaining)
+searchChaining
+insertLinearProbing (Linear Probing)
+searchLinearProbing
+insertQuadraticProbing (Quadratic Probing)
+searchQuadraticProbing
+insertDoubleHashing (Double Hashing)
+searchDoubleHashing
+rehash
+displayHashTable
+Extendible Hashing Functions:
+
+initializeExtendibleHashing
+insertExtendibleHashing
+searchExtendibleHashing
+splitBucket
+displayExtendibleHashing
+
+### Module 6: Hashing
+
+
+#### Complete Code for Hashing (All Techniques)
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+#define SIZE 10
+#define BUCKET_SIZE 2
+#define GLOBAL_DEPTH 2
+
+typedef struct Node {
+    int data;
+    struct Node* next;
+} Node;
+
+Node* hashTableChaining[SIZE];
+int hashTableLinear[SIZE];
+int hashTableQuadratic[SIZE];
+int hashTableDoubleHashing[SIZE];
+
+typedef struct Bucket {
+    int keys[BUCKET_SIZE];
+    int count;
+} Bucket;
+
+Bucket* directory[1 << GLOBAL_DEPTH];
+
+void initHashTables() {
+    for (int i = 0; i < SIZE; i++) {
+        hashTableChaining[i] = NULL;
+        hashTableLinear[i] = -1;
+        hashTableQuadratic[i] = -1;
+        hashTableDoubleHashing[i] = -1;
+    }
+    for (int i = 0; i < (1 << GLOBAL_DEPTH); i++) {
+        directory[i] = (Bucket*)malloc(sizeof(Bucket));
+        directory[i]->count = 0;
+    }
+}
+
+int hashFunction(int key) {
+    return key % SIZE;
+}
+
+void insertChaining(int key) {
+    int index = hashFunction(key);
+    Node* newNode = (Node*)malloc(sizeof(Node));
+    newNode->data = key;
+    newNode->next = hashTableChaining[index];
+    hashTableChaining[index] = newNode;
+}
+
+void insertLinearProbing(int key) {
+    int index = hashFunction(key);
+    while (hashTableLinear[index] != -1) {
+        index = (index + 1) % SIZE;
+    }
+    hashTableLinear[index] = key;
+}
+
+int quadraticProbing(int key, int i) {
+    return (key % SIZE + i * i) % SIZE;
+}
+
+void insertQuadraticProbing(int key) {
+    int i = 0, index;
+    while (i < SIZE) {
+        index = quadraticProbing(key, i);
+        if (hashTableQuadratic[index] == -1) {
+            hashTableQuadratic[index] = key;
+            return;
+        }
+        i++;
+    }
+    printf("Hash table overflow! Could not insert %d\n", key);
+}
+
+int doubleHash(int key, int i) {
+    int hash1 = key % SIZE;
+    int hash2 = 7 - (key % 7);
+    return (hash1 + i * hash2) % SIZE;
+}
+
+void insertDoubleHashing(int key) {
+    int i = 0, index;
+    while (i < SIZE) {
+        index = doubleHash(key, i);
+        if (hashTableDoubleHashing[index] == -1) {
+            hashTableDoubleHashing[index] = key;
+            return;
+        }
+        i++;
+    }
+    printf("Hash table overflow! Could not insert %d\n", key);
+}
+
+void insertExtendible(int key) {
+    int index = key % (1 << GLOBAL_DEPTH);
+    Bucket* bucket = directory[index];
+    if (bucket->count < BUCKET_SIZE) {
+        bucket->keys[bucket->count++] = key;
+    } else {
+        printf("Bucket overflow! Key %d could not be inserted.\n", key);
+    }
+}
+
+void displayHashTables() {
+    printf("\nSeparate Chaining:\n");
+    for (int i = 0; i < SIZE; i++) {
+        printf("Index %d: ", i);
+        Node* temp = hashTableChaining[i];
+        while (temp) {
+            printf("%d -> ", temp->data);
+            temp = temp->next;
+        }
+        printf("NULL\n");
+    }
+
+    printf("\nLinear Probing:\n");
+    for (int i = 0; i < SIZE; i++) {
+        if (hashTableLinear[i] != -1)
+            printf("Index %d: %d\n", i, hashTableLinear[i]);
+        else
+            printf("Index %d: EMPTY\n", i);
+    }
+
+    printf("\nQuadratic Probing:\n");
+    for (int i = 0; i < SIZE; i++) {
+        if (hashTableQuadratic[i] != -1)
+            printf("Index %d: %d\n", i, hashTableQuadratic[i]);
+        else
+            printf("Index %d: EMPTY\n", i);
+    }
+
+    printf("\nDouble Hashing:\n");
+    for (int i = 0; i < SIZE; i++) {
+        if (hashTableDoubleHashing[i] != -1)
+            printf("Index %d: %d\n", i, hashTableDoubleHashing[i]);
+        else
+            printf("Index %d: EMPTY\n", i);
+    }
+
+    printf("\nExtendible Hashing:\n");
+    for (int i = 0; i < (1 << GLOBAL_DEPTH); i++) {
+        printf("Bucket %d: ", i);
+        for (int j = 0; j < directory[i]->count; j++) {
+            printf("%d ", directory[i]->keys[j]);
+        }
+        printf("\n");
+    }
+}
+
+int main() {
+    initHashTables();
+    insertChaining(15);
+    insertChaining(25);
+    insertLinearProbing(15);
+    insertLinearProbing(25);
+    insertQuadraticProbing(15);
+    insertQuadraticProbing(25);
+    insertDoubleHashing(15);
+    insertDoubleHashing(25);
+    insertExtendible(15);
+    insertExtendible(25);
+    displayHashTables();
+    return 0;
+}
+```
+=====================================================================
+M8. HEAPS & AVL
+
+
+
+List of Function Names in Module 6
+Hashing Functions:
+
+insertChaining (Separate Chaining)
+searchChaining
+insertLinearProbing (Linear Probing)
+searchLinearProbing
+insertQuadraticProbing (Quadratic Probing)
+searchQuadraticProbing
+insertDoubleHashing (Double Hashing)
+searchDoubleHashing
+rehash
+displayHashTable
+Extendible Hashing Functions:
+
+initializeExtendibleHashing
+insertExtendibleHashing
+searchExtendibleHashing
+splitBucket
+displayExtendibleHashing
+List of Function Names in Module 7
+Heap Functions:
+
+heapifyDown (Min-Heapify for deletion)
+heapifyUp (Min-Heapify for insertion)
+insertHeap (Insert element into Min-Heap)
+deleteHeapRoot (Delete root from Min-Heap)
+displayHeap (Display elements in the heap)
+AVL Tree Functions:
+
+newNode (Create a new AVL node)
+height (Get the height of an AVL node)
+rotateRight (Perform right rotation on an AVL node)
+rotateLeft (Perform left rotation on an AVL node)
+getBalance (Get the balance factor of an AVL node)
+insertAVL (Insert a node into the AVL tree)
+deleteAVL (Delete a node from the AVL tree)
+minValueNode (Find the node with the smallest value in a subtree)
+inorderAVL (Perform in-order traversal of the AVL tree)
+
+
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX 100
+
+int heap[MAX];
+int size = 0;
+
+// Function to restore the heap property after deletion or insertion
+void heapifyDown(int i) {
+    int smallest = i, left = 2 * i + 1, right = 2 * i + 2;
+    if (left < size && heap[left] < heap[smallest]) smallest = left;
+    if (right < size && heap[right] < heap[smallest]) smallest = right;
+    if (smallest != i) {
+        int temp = heap[i];
+        heap[i] = heap[smallest];
+        heap[smallest] = temp;
+        heapifyDown(smallest);
+    }
+}
+
+void heapifyUp(int i) {
+    int parent = (i - 1) / 2;
+    if (i && heap[i] < heap[parent]) {
+        int temp = heap[i];
+        heap[i] = heap[parent];
+        heap[parent] = temp;
+        heapifyUp(parent);
+    }
+}
+
+void insertHeap(int val) {
+    if (size == MAX) {
+        printf("Heap overflow\n");
+        return;
+    }
+    heap[size++] = val;
+    heapifyUp(size - 1);
+}
+
+void deleteHeapRoot() {
+    if (size == 0) {
+        printf("Heap underflow\n");
+        return;
+    }
+    heap[0] = heap[--size];
+    heapifyDown(0);
+}
+
+void displayHeap() {
+    printf("Heap: ");
+    for (int i = 0; i < size; i++) printf("%d ", heap[i]);
+    printf("\n");
+}
+
+typedef struct AVLNode {
+    int key, height;
+    struct AVLNode *left, *right;
+} AVLNode;
+
+AVLNode* newNode(int key) {
+    AVLNode* node = (AVLNode*)malloc(sizeof(AVLNode));
+    node->key = key;
+    node->left = node->right = NULL;
+    node->height = 1;
+    return node;
+}
+
+int height(AVLNode* n) {
+    return n ? n->height : 0;
+}
+
+AVLNode* rotateRight(AVLNode* y) {
+    AVLNode* x = y->left;
+    AVLNode* T2 = x->right;
+
+    x->right = y;
+    y->left = T2;
+
+    y->height = 1 + (height(y->left) > height(y->right) ? height(y->left) : height(y->right));
+    x->height = 1 + (height(x->left) > height(x->right) ? height(x->left) : height(x->right));
+
+    return x;
+}
+
+AVLNode* rotateLeft(AVLNode* x) {
+    AVLNode* y = x->right;
+    AVLNode* T2 = y->left;
+
+    y->left = x;
+    x->right = T2;
+
+    x->height = 1 + (height(x->left) > height(x->right) ? height(x->left) : height(x->right));
+    y->height = 1 + (height(y->left) > height(y->right) ? height(y->left) : height(y->right));
+
+    return y;
+}
+
+int getBalance(AVLNode* n) {
+    return n ? height(n->left) - height(n->right) : 0;
+}
+
+AVLNode* insertAVL(AVLNode* node, int key) {
+    if (!node) return newNode(key);
+    if (key < node->key) node->left = insertAVL(node->left, key);
+    else if (key > node->key) node->right = insertAVL(node->right, key);
+    else return node;
+
+    node->height = 1 + (height(node->left) > height(node->right) ? height(node->left) : height(node->right));
+
+    int balance = getBalance(node);
+
+    if (balance > 1 && key < node->left->key) return rotateRight(node);
+    if (balance < -1 && key > node->right->key) return rotateLeft(node);
+    if (balance > 1 && key > node->left->key) {
+        node->left = rotateLeft(node->left);
+        return rotateRight(node);
+    }
+    if (balance < -1 && key < node->right->key) {
+        node->right = rotateRight(node->right);
+        return rotateLeft(node);
+    }
+
+    return node;
+}
+
+AVLNode* minValueNode(AVLNode* node) {
+    AVLNode* current = node;
+    while (current->left) current = current->left;
+    return current;
+}
+
+AVLNode* deleteAVL(AVLNode* root, int key) {
+    if (!root) return root;
+
+    if (key < root->key) root->left = deleteAVL(root->left, key);
+    else if (key > root->key) root->right = deleteAVL(root->right, key);
+    else {
+        if (!root->left || !root->right) {
+            AVLNode* temp = root->left ? root->left : root->right;
+            if (!temp) {
+                temp = root;
+                root = NULL;
+            } else *root = *temp;
+            free(temp);
+        } else {
+            AVLNode* temp = minValueNode(root->right);
+            root->key = temp->key;
+            root->right = deleteAVL(root->right, temp->key);
+        }
+    }
+
+    if (!root) return root;
+
+    root->height = 1 + (height(root->left) > height(root->right) ? height(root->left) : height(root->right));
+
+    int balance = getBalance(root);
+
+    if (balance > 1 && getBalance(root->left) >= 0) return rotateRight(root);
+    if (balance > 1 && getBalance(root->left) < 0) {
+        root->left = rotateLeft(root->left);
+        return rotateRight(root);
+    }
+    if (balance < -1 && getBalance(root->right) <= 0) return rotateLeft(root);
+    if (balance < -1 && getBalance(root->right) > 0) {
+        root->right = rotateRight(root->right);
+        return rotateLeft(root);
+    }
+
+    return root;
+}
+
+void inorderAVL(AVLNode* root) {
+    if (!root) return;
+    inorderAVL(root->left);
+    printf("%d ", root->key);
+    inorderAVL(root->right);
+}
+
+int main() {
+    AVLNode* root = NULL;
+
+    // Min-Heap Operations
+    insertHeap(10);
+    insertHeap(20);
+    insertHeap(5);
+    displayHeap();
+    deleteHeapRoot();
+    displayHeap();
+
+    // AVL Tree Operations
+    root = insertAVL(root, 10);
+    root = insertAVL(root, 20);
+    root = insertAVL(root, 5);
+    root = insertAVL(root, 15);
+    printf("Inorder AVL after insertion: ");
+    inorderAVL(root);
+    printf("\n");
+
+    root = deleteAVL(root, 20);
+    printf("Inorder AVL after deletion: ");
+    inorderAVL(root);
+    printf("\n");
+
+    return 0;
+}
 
 =====================================================================
 1. Stack(array)
@@ -6992,3 +7439,4 @@ int main() {
 
 
 =====================================================================
+
