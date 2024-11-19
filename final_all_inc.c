@@ -5,11 +5,13 @@
 3. DIJKSTRA
 4. MST  (KRUSKAL, PRIMS)
 5. BFS DFS (1. Traversal , 2. isBipartite, 3. longest conc path, 4. connected compontents , 5. shortest cycle , 6. hasCycle, 7. shortest path)
+6. toh, pre abd post covversion and evalution
 6. Stack(array)
 7. Linear QUEUE INT
 8. Circular Queue INT
 9. LINEAR DEQUE INT
 10. CIRCULAR DEQUE INT
+11. ll polinomial evalution
 11. SINGLE LL (LINEAR)
 12. SINGLE LL (CIRCULAR)
 13. DOUBLY LL (LINEAR)
@@ -1701,6 +1703,188 @@ int main() {
 
 ==========================================================================================================================================
 ==========================================================================================================================================
+6. stack tower of hanoi 
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+
+void TOH(int n,char src,char aux,char dest,int *move_cnt){
+    if(n==1){
+        (*move_cnt)++;
+        printf("Move disk 1 from %c to %c\n",src,dest);
+        return ;
+    }
+    TOH(n-1,src,dest,aux,move_cnt);
+    (*move_cnt)++;
+    printf("Move disk %d from %c to %c\n",n , src , dest);
+    TOH(n-1,aux,src,dest,move_cnt);
+    
+}
+
+int main() {
+    int n;
+    scanf("%d", &n);
+    
+    int move_cnt = 0;
+    
+    TOH(n,'A','B','C',&move_cnt);
+    printf("Total number of moves: %d\n",move_cnt);
+    return 0;
+}
+
+
+6. Stack - pre and post fix evalution & conversion
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
+#include <string.h>
+
+#define MAX 100
+
+typedef struct {
+    char data[MAX][MAX];
+    int top;
+} Stack;
+
+typedef struct {
+    int data[MAX];
+    int top;
+} IntStack;
+
+void initStack(Stack *s) {
+    s->top = -1;
+}
+
+void push(Stack *s, char *val) {
+    strcpy(s->data[++(s->top)], val);
+}
+
+char* pop(Stack *s) {
+    return s->data[(s->top)--];
+}
+
+void initIntStack(IntStack *s) {
+    s->top = -1;
+}
+
+void pushInt(IntStack *s, int val) {
+    s->data[++(s->top)] = val;
+}
+
+int popInt(IntStack *s) {
+    return s->data[(s->top)--];
+}
+
+int isOperator(char c) {
+    return c == '+' || c == '-' || c == '*' || c == '/';
+}
+
+void prefixToPostfix(char *prefix, char *postfix) {
+    Stack s;
+    initStack(&s);
+    int len = strlen(prefix);
+    for (int i = len - 1; i >= 0; i--) {
+        if (isOperator(prefix[i])) {
+            char op1[MAX], op2[MAX], temp[MAX];
+            strcpy(op1, pop(&s));
+            strcpy(op2, pop(&s));
+            sprintf(temp, "%s%s%c", op1, op2, prefix[i]);
+            push(&s, temp);
+        } else {
+            char temp[2] = {prefix[i], '\0'};
+            push(&s, temp);
+        }
+    }
+    strcpy(postfix, pop(&s));
+}
+
+int evaluatePostfix(char *postfix) {
+    IntStack s;
+    initIntStack(&s);
+    for (int i = 0; i < strlen(postfix); i++) {
+        if (isdigit(postfix[i])) {
+            pushInt(&s, postfix[i] - '0');
+        } else {
+            int op2 = popInt(&s), op1 = popInt(&s);
+            switch (postfix[i]) {
+                case '+': pushInt(&s, op1 + op2); break;
+                case '-': pushInt(&s, op1 - op2); break;
+                case '*': pushInt(&s, op1 * op2); break;
+                case '/': pushInt(&s, op1 / op2); break;
+            }
+        }
+    }
+    return popInt(&s);
+}
+
+void postfixToPrefix(char *postfix, char *prefix) {
+    Stack s;
+    initStack(&s);
+    for (int i = 0; i < strlen(postfix); i++) {
+        if (isOperator(postfix[i])) {
+            char op1[MAX], op2[MAX], temp[MAX];
+            strcpy(op2, pop(&s));
+            strcpy(op1, pop(&s));
+            sprintf(temp, "%c%s%s", postfix[i], op1, op2);
+            push(&s, temp);
+        } else {
+            char temp[2] = {postfix[i], '\0'};
+            push(&s, temp);
+        }
+    }
+    strcpy(prefix, pop(&s));
+}
+
+int evaluatePrefix(char *prefix) {
+    IntStack s;
+    initIntStack(&s);
+    int len = strlen(prefix);
+    for (int i = len - 1; i >= 0; i--) {
+        if (isdigit(prefix[i])) {
+            pushInt(&s, prefix[i] - '0');
+        } else {
+            int op1 = popInt(&s), op2 = popInt(&s);
+            switch (prefix[i]) {
+                case '+': pushInt(&s, op1 + op2); break;
+                case '-': pushInt(&s, op1 - op2); break;
+                case '*': pushInt(&s, op1 * op2); break;
+                case '/': pushInt(&s, op1 / op2); break;
+            }
+        }
+    }
+    return popInt(&s);
+}
+
+int main() {
+    char prefix[MAX], postfix[MAX];
+    int choice;
+    
+    printf("Choose an option:\n");
+    printf("1. Prefix to Postfix and Evaluate\n");
+    printf("2. Postfix to Prefix and Evaluate\n");
+    scanf("%d", &choice);
+    getchar();
+    
+    if (choice == 1) {
+        printf("Enter a Prefix Expression: ");
+        scanf("%s", prefix);
+        prefixToPostfix(prefix, postfix);
+        printf("Postfix: %s\n", postfix);
+        printf("Postfix Evaluation: %d\n", evaluatePostfix(postfix));
+    } else if (choice == 2) {
+        printf("Enter a Postfix Expression: ");
+        scanf("%s", postfix);
+        postfixToPrefix(postfix, prefix);
+        printf("Prefix: %s\n", prefix);
+        printf("Prefix Evaluation: %d\n", evaluatePrefix(prefix));
+    } else {
+        printf("Invalid choice\n");
+    }
+    
+    return 0;
+}
+
 
 
 6. Stack(array)
@@ -2501,7 +2685,85 @@ int main() {
 }
 ==========================================================================================================================================
 ==========================================================================================================================================
+11. LL polinomial evalution
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+
+// Node structure for the polynomial
+struct Node {
+    int coefficient;
+    int exponent;
+    struct Node* next;
+};
+
+// Function to create a new node
+struct Node* createNode(int coefficient, int exponent) {
+    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+    newNode->coefficient = coefficient;
+    newNode->exponent = exponent;
+    newNode->next = NULL;
+    return newNode;
+}
+
+// Function to add a node to the polynomial linked list
+void addNode(struct Node** head, int coefficient, int exponent) {
+    struct Node* newNode = createNode(coefficient, exponent);
+    newNode->next = *head;
+    *head = newNode;
+}
+
+// Function to evaluate the polynomial for a given x
+int evaluatePolynomial(struct Node* head, int x) {
+    int result = 0;
+    struct Node* current = head;
+    while (current != NULL) {
+        result += current->coefficient * pow(x, current->exponent);
+        current = current->next;
+    }
+    return result;
+}
+
+// Main function
+int main() {
+    int degree, x;
+    struct Node* head = NULL;
+
+    // Input degree of the polynomial
+    printf("Enter the degree of the polynomial: ");
+    scanf("%d", &degree);
+
+    // Input coefficients for each term
+    for (int i = degree; i >= 0; i--) {
+        int coefficient;
+        printf("Enter the coefficient of x^%d: ", i);
+        scanf("%d", &coefficient);
+        addNode(&head, coefficient, i);
+    }
+
+    // Input value of x
+    printf("Enter the value of x: ");
+    scanf("%d", &x);
+
+    // Evaluate the polynomial and print the result
+    int result = evaluatePolynomial(head, x);
+    printf("The result of the polynomial evaluation is: %d\n", result);
+
+    return 0;
+}
+
+Enter the degree of the polynomial: 2
+Enter the coefficient of x^2: 13
+Enter the coefficient of x^1: 12
+Enter the coefficient of x^0: 11
+Enter the value of x: 1
+
+The result of the polynomial evaluation is: 36
+
+
+==========================================================================================================================================
+==========================================================================================================================================
 11. SINGLE LL (LINEAR)
 
 
